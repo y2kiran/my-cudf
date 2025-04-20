@@ -22,6 +22,7 @@
 #include "ipc/Message_generated.h"
 #include "ipc/Schema_generated.h"
 
+#include <cudf/detail/nvtx/ranges.hpp>
 #include <cudf/detail/utilities/host_worker_pool.hpp>
 #include <cudf/io/parquet_schema.hpp>
 #include <cudf/logger.hpp>
@@ -289,6 +290,8 @@ void metadata::sanitize_schema()
 
 metadata::metadata(datasource* source)
 {
+  CUDF_FUNC_RANGE();
+
   constexpr auto header_len = sizeof(file_header_s);
   constexpr auto ender_len  = sizeof(file_ender_s);
 

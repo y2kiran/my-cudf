@@ -28,6 +28,7 @@
 #include <cudf/utilities/span.hpp>
 #include <cudf/utilities/traits.hpp>
 #include <cudf/utilities/type_checks.hpp>
+#include <cudf/detail/nvtx/ranges.hpp>
 
 #include <rmm/cuda_stream_view.hpp>
 #include <rmm/device_buffer.hpp>
@@ -290,6 +291,7 @@ void read_bloom_filter_data(host_span<std::unique_ptr<datasource> const> sources
                             rmm::cuda_stream_view stream,
                             rmm::device_async_resource_ref aligned_mr)
 {
+  CUDF_FUNC_RANGE();
   // Using `cuco::arrow_filter_policy` with a temporary `cuda::std::byte` key type to extract bloom
   // filter properties
   using policy_type = cuco::arrow_filter_policy<cuda::std::byte, cudf::hashing::detail::XXHash_64>;

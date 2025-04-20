@@ -1045,11 +1045,13 @@ void reader::impl::read_compressed_data()
 
   auto& chunks = pass.chunks;
 
+  nvtx3::named_range<nvtx3::domain::cuda> range{"CUDF IO"};
   auto const [has_compressed_data, read_chunks_tasks] = read_column_chunks();
   pass.has_compressed_data                            = has_compressed_data;
 
   read_chunks_tasks.wait();
-
+  range.end();
+  
   // Process dataset chunk pages into output columns
   auto const total_pages = _has_page_index ? count_page_headers_with_pgidx(chunks, _stream)
                                            : count_page_headers(chunks, _stream);
