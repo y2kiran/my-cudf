@@ -996,11 +996,16 @@ void reader::impl::read_compressed_data()
 
   auto& chunks = pass.chunks;
 
-  auto const [has_compressed_data, read_chunks_tasks] = read_column_chunks();
-  pass.has_compressed_data                            = has_compressed_data;
+  bool has_compressed_data;
+  std::vector<std::future<void>> read_chunks_tasks;
+  {
+    CUDF_FUNC_RANGE();
+    std::tie(has_compressed_data, read_chunks_tasks) = read_column_chunks();
+    pass.has_compressed_data = has_compressed_data;
 
-  for (auto& task : read_chunks_tasks) {
-    task.wait();
+    for (auto& task : read_chunks_tasks) {
+      task.wait();
+    }
   }
 
   // Process dataset chunk pages into output columns

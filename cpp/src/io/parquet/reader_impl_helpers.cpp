@@ -283,6 +283,7 @@ void metadata::sanitize_schema()
 
 metadata::metadata(datasource* source)
 {
+  CUDF_FUNC_RANGE();
   constexpr auto header_len = sizeof(file_header_s);
   constexpr auto ender_len  = sizeof(file_ender_s);
 
