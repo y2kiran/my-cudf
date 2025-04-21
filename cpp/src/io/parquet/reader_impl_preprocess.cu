@@ -1044,13 +1044,13 @@ void reader::impl::read_compressed_data()
   CUDF_EXPECTS(_pass_itm_data->num_rows > 0, "Number of reading rows must not be zero.");
 
   auto& chunks = pass.chunks;
+  {
+    CUDF_FUNC_RANGE();
+    auto const [has_compressed_data, read_chunks_tasks] = read_column_chunks();
+    pass.has_compressed_data                            = has_compressed_data;
 
-  nvtx3::named_range<nvtx3::domain::cuda> range{"CUDF IO"};
-  auto const [has_compressed_data, read_chunks_tasks] = read_column_chunks();
-  pass.has_compressed_data                            = has_compressed_data;
-
-  read_chunks_tasks.wait();
-  range.end();
+    read_chunks_tasks.wait();
+  }
   
   // Process dataset chunk pages into output columns
   auto const total_pages = _has_page_index ? count_page_headers_with_pgidx(chunks, _stream)
